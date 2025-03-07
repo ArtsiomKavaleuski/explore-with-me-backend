@@ -11,6 +11,12 @@
 	</parent>
 
 	<name>Explore With Me</name>
+	<modules>
+		<module>ewm-stat</module>
+		<module>ewm-stat/ewm-stat-srv</module>
+		<module>ewm-stat/ewm-stat-client</module>
+		<module>ewm-stat/ewm-stat-dto</module>
+	</modules>
 
 	<groupId>ru.practicum</groupId>
 	<artifactId>explore-with-me</artifactId>
