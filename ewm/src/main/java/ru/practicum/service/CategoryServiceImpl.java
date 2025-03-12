@@ -40,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
         Category category = CategoryMapper.toCategory(newCategoryDto);
-        if(categoryRepository.findAll().stream().anyMatch(cat -> cat.getName().equals(category.getName()))) {
+        if (categoryRepository.findAll().stream().anyMatch(cat -> cat.getName().equals(category.getName()))) {
             throw new DataConflictException("Категория уже существует");
         }
         return CategoryMapper.toCategoryDto(categoryRepository.save(category));
@@ -50,7 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void removeCategory(Long categoryId) {
         getCategoryById(categoryId);
-        if(eventRepository.findAll().stream().anyMatch(e -> e.getCategory().getId().equals(categoryId))){
+        if (eventRepository.findAll().stream().anyMatch(e -> e.getCategory().getId().equals(categoryId))) {
             throw new DataConflictException("В удаляемой категории есть события");
         }
         categoryRepository.deleteById(categoryId.intValue());

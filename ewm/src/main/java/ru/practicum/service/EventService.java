@@ -3,6 +3,7 @@ package ru.practicum.service;
 import ru.practicum.dto.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.List;
 
 public interface EventService {
