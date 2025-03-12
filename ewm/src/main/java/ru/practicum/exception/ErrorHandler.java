@@ -63,4 +63,14 @@ public class ErrorHandler {
         return new ApiError(HttpStatus.CONFLICT, "Integrity constraint has been violated.", e.getMessage(),
                 Collections.singletonList(stackTrace), LocalDateTime.now());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleUnknownException(Throwable e) {
+        StringWriter out = new StringWriter();
+        e.printStackTrace(new PrintWriter(out));
+        String stackTrace = out.toString();
+        return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Непредвиденная ошибка", e.getMessage(),
+                Collections.singletonList(stackTrace), LocalDateTime.now());
+    }
 }
