@@ -26,7 +26,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError NotFoundException(NotFoundException e) {
+    public ApiError handleNotFoundException(NotFoundException e) {
         StringWriter out = new StringWriter();
         e.printStackTrace(new PrintWriter(out));
         String stackTrace = out.toString();

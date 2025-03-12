@@ -39,7 +39,7 @@ public class EventServiceImpl implements EventService {
     private final EventStatService eventStatService;
     private final RequestRepository requestRepository;
 
-    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public List<EventShortDto> findPublishedEvents(EventUserParam eventUserParam, HttpServletRequest request) {
