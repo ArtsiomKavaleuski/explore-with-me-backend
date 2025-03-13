@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.exception.BadRequestException;
 import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.repository.EwmStatSrvRepository;
@@ -40,6 +41,12 @@ public class EwmStatSrvServiceImpl implements EwmStatSrvService {
             return ViewStatsMapper.toViewStatsDto(repository.findStatsByTimeAndUrisAndUniqIp(start, end, uris));
         } else {
             return ViewStatsMapper.toViewStatsDto(repository.findStatsByTimeAndUris(start, end, uris));
+        }
+    }
+
+    private void checkDates(LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) {
+            throw new BadRequestException("Дата начала не может быть после даты конца");
         }
     }
 }
