@@ -348,7 +348,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void validateEventTimeByAdmin(LocalDateTime eventTime) {
-        if(eventTime.isBefore((LocalDateTime.now()))) {
+        if (eventTime.isBefore((LocalDateTime.now()))) {
             throw new BadRequestException("Нельзя изменить дату события на уже наступившую");
         }
         if (eventTime.isBefore(LocalDateTime.now().plusHours(1))) {
@@ -357,7 +357,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void validateEventTimeByUser(LocalDateTime eventTime) {
-        if(eventTime.isBefore((LocalDateTime.now()))) {
+        if (eventTime.isBefore((LocalDateTime.now()))) {
             throw new BadRequestException("Нельзя изменить дату события на уже наступившую");
         }
         if (eventTime.isBefore(LocalDateTime.now().plusHours(2))) {
