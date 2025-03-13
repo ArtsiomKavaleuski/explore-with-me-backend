@@ -33,6 +33,7 @@ public class EwmStatSrvServiceImpl implements EwmStatSrvService {
                                              LocalDateTime end,
                                              Collection<String> uris,
                                              Boolean unique) {
+        checkDates(start, end);
         if ((uris == null || uris.isEmpty()) && !unique) {
             return ViewStatsMapper.toViewStatsDto(repository.findStatsByTime(start, end));
         } else if (unique && (uris == null || uris.isEmpty())) {
@@ -45,7 +46,7 @@ public class EwmStatSrvServiceImpl implements EwmStatSrvService {
     }
 
     private void checkDates(LocalDateTime start, LocalDateTime end) {
-        if (start.isAfter(end)) {
+        if (start.isBefore(end)) {
             throw new BadRequestException("Дата начала не может быть после даты конца");
         }
     }
