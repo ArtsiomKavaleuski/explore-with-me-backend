@@ -60,7 +60,7 @@ public class EventServiceImpl implements EventService {
                                 "%" + eventUserParam.getText().toLowerCase() + "%")));
             }
             if (eventUserParam.getCategories() != null) {
-                CriteriaBuilder.In<Long> categoriesClause = criteriaBuilder.in(root.get("category"));
+                CriteriaBuilder.In<Long> categoriesClause = criteriaBuilder.in(root.get("category").get("id"));
                 for (Long category : eventUserParam.getCategories()) {
                     categoriesClause.value(category);
                 }
@@ -80,7 +80,7 @@ public class EventServiceImpl implements EventService {
         }
         );
         events = eventRepository.findAll(specification, pageable).getContent();
-        views = eventStatService.getEventsViews(events.stream().map(Event::getId).collect(Collectors.toList()));
+        views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
         return EventMapper.toShortDtos(events, views);
     }
 
@@ -243,7 +243,7 @@ public class EventServiceImpl implements EventService {
         Specification<Event> specification = ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (eventAdminParam.getUsers() != null) {
-                CriteriaBuilder.In<Long> usersClause = criteriaBuilder.in(root.get("initiator"));
+                CriteriaBuilder.In<Long> usersClause = criteriaBuilder.in(root.get("initiator").get("id"));
                 for (Long user : eventAdminParam.getUsers()) {
                     usersClause.value(user);
                 }
@@ -258,7 +258,7 @@ public class EventServiceImpl implements EventService {
                 predicates.add(statesClause);
             }
             if (eventAdminParam.getCategories() != null) {
-                CriteriaBuilder.In<Long> categoriesClause = criteriaBuilder.in(root.get("category"));
+                CriteriaBuilder.In<Long> categoriesClause = criteriaBuilder.in(root.get("category").get("id"));
                 for (Long category : eventAdminParam.getCategories()) {
                     categoriesClause.value(category);
                 }
@@ -348,12 +348,18 @@ public class EventServiceImpl implements EventService {
     }
 
     private void validateEventTimeByAdmin(LocalDateTime eventTime) {
+        if(eventTime.isBefore((LocalDateTime.now()))) {
+            throw new BadRequestException("Нельзя изменить дату события на уже наступившую");
+        }
         if (eventTime.isBefore(LocalDateTime.now().plusHours(1))) {
             throw new DataConflictException("Дата начала изменяемого события должна быть не ранее чем за час");
         }
     }
 
     private void validateEventTimeByUser(LocalDateTime eventTime) {
+        if(eventTime.isBefore((LocalDateTime.now()))) {
+            throw new BadRequestException("Нельзя изменить дату события на уже наступившую");
+        }
         if (eventTime.isBefore(LocalDateTime.now().plusHours(2))) {
             throw new DataConflictException("Дата и время на которые намечено событие не может быть " +
                     "раньше, чем через два часа");
@@ -420,7 +426,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private Category getCategoryById(Long categoryId) {
-        return categoryRepository.findById(categoryId.intValue())
+        return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Категория не найдена"));
     }
 

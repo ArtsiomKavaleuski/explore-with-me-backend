@@ -53,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (eventRepository.findAll().stream().anyMatch(e -> e.getCategory().getId().equals(categoryId))) {
             throw new DataConflictException("В удаляемой категории есть события");
         }
-        categoryRepository.deleteById(categoryId.intValue());
+        categoryRepository.deleteById(categoryId);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private Category getCategoryById(Long categoryId) {
-        return categoryRepository.findById(categoryId.intValue())
+        return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Категория не найдена"));
     }
 }
