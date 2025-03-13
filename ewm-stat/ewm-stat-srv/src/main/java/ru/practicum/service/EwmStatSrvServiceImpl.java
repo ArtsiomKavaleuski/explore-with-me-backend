@@ -33,7 +33,7 @@ public class EwmStatSrvServiceImpl implements EwmStatSrvService {
                                              LocalDateTime end,
                                              Collection<String> uris,
                                              Boolean unique) {
-        if(start.isAfter(end)) {
+        if (start.isAfter(end)) {
             throw new BadRequestException("Дата начала не может быть после даты конца");
         }
         if ((uris == null || uris.isEmpty()) && !unique) {
