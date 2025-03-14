@@ -9,11 +9,10 @@ import java.util.List;
 
 public class UserMapper {
 
-    public static User toUser(UserDto inDto) {
+    public static User toUser(UserDto userDto) {
         User user = new User();
-        user.setEmail(inDto.getEmail());
-        user.setId(user.getId());
-        user.setName(inDto.getName());
+        user.setEmail(userDto.getEmail());
+        user.setName(userDto.getName());
         return user;
     }
 

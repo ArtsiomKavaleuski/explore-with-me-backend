@@ -1,15 +1,14 @@
 package ru.practicum.dto;
 
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.model.Location;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateEventUserRequest {
