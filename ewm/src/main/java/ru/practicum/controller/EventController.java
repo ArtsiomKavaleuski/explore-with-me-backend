@@ -1,5 +1,7 @@
 package ru.practicum.controller;
 
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -115,4 +117,23 @@ public class EventController {
                                          @Valid @RequestBody UpdateEventAdminRequest updateRequest) {
         return eventService.adminUpdateEvent(eventId, updateRequest);
     }
+
+    @GetMapping("/users/{userId}/followers/{followerId}/events")
+    public List<EventFullDto> findEventsBySubscriptionOfUser(@PathVariable Long userId,
+                                                             @PathVariable Long followerId,
+                                                             @RequestParam(required = false, defaultValue = "NEW") String sort,
+                                                             @PositiveOrZero @RequestParam(required = false, defaultValue = "0") Integer from,
+                                                             @Positive @RequestParam(required = false, defaultValue = "10") Integer size) {
+        return eventService.findEventsBySubscriptionOfUser(userId, followerId, sort, from, size);
+    }
+
+    @GetMapping("/users/followers/{followerId}/events")
+    public List<EventShortDto> findEventsByAllSubscriptions(@PathVariable Long followerId,
+                                                            @RequestParam(required = false, defaultValue = "NEW") String sort,
+                                                            @PositiveOrZero @RequestParam(required = false, defaultValue = "0") Integer from,
+                                                            @Positive @RequestParam(required = false, defaultValue = "10") Integer size) {
+        return eventService.findEventsByAllSubscriptions(followerId, sort, from, size);
+    }
+
+
 }

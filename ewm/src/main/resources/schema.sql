@@ -56,3 +56,10 @@ CREATE TABLE IF NOT EXISTS compilation_events (
     CONSTRAINT compilation_events_pk PRIMARY KEY (compilation_id, event_id),
     CONSTRAINT fk_comp_events_to_comps FOREIGN KEY(compilation_id) REFERENCES compilations(id),
     CONSTRAINT fk_comp_events_to_events FOREIGN KEY(event_id) REFERENCES events(id));
+
+CREATE TABLE IF NOT EXISTS user_followers (
+    user_id BIGINT                            NOT NULL,
+    follower_id BIGINT                        NOT NULL,
+    CONSTRAINT user_followers_pk PRIMARY KEY (user_id, follower_id),
+    CONSTRAINT fk_user_followers_to_users FOREIGN KEY(user_id) REFERENCES users(id),
+    CONSTRAINT fk_followers_to_users FOREIGN KEY(follower_id) REFERENCES users(id));

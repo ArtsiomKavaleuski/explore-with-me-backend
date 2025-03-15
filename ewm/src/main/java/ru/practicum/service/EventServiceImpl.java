@@ -325,6 +325,48 @@ public class EventServiceImpl implements EventService {
         return EventMapper.toEventFullDtoWithViews(updated, views);
     }
 
+    @Override
+    public List<EventFullDto> findEventsBySubscriptionOfUser(Long userId, Long followerId, String sort, Integer from, Integer size) {
+        Pageable pageable;
+        SubscriptionSort subSort = SubscriptionSort.valueOf(sort);
+        if (subSort == SubscriptionSort.NEW) {
+            pageable = PageRequest.of(from / size, size, Sort.by("eventDate").descending());
+        } else {
+            pageable = PageRequest.of(from / size, size, Sort.by("eventDate"));
+        }
+        if (userId.equals(followerId)) {
+            throw new DataConflictException("Пользователь не может быть подписан на себя");
+        }
+        User user = getUserById(userId);
+        User follower = getUserById(followerId);
+        if (!user.getFollowers().contains(follower)) {
+            throw new BadRequestException("Пользователь с id " + followerId + " не подписан на пользователя с id " +
+                    userId);
+        }
+        List<Event> events = eventRepository.findByInitiatorIdAndState(userId, EventState.PUBLISHED, pageable);
+        Map<Long, Long> views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
+        return EventMapper.toFullDtos(events, views);
+    }
+
+    @Override
+    public List<EventShortDto> findEventsByAllSubscriptions(Long followerId, String sort, Integer from, Integer size) {
+        Pageable pageable;
+        SubscriptionSort subSort = SubscriptionSort.valueOf(sort);
+        if (subSort == SubscriptionSort.NEW) {
+            pageable = PageRequest.of(from / size, size, Sort.by("eventDate").descending());
+        } else {
+            pageable = PageRequest.of(from / size, size, Sort.by("eventDate"));
+        }
+        User follower = getUserById(followerId);
+        if (follower.getFollowees().isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Long> folowees = follower.getFollowees().stream().map(User::getId).toList();
+        List<Event> events = eventRepository.findByStateAndInitiatorIdIn(EventState.PUBLISHED, folowees, pageable);
+        Map<Long, Long> views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
+        return EventMapper.toShortDtos(events, views);
+    }
+
     private Sort getEventSort(String eventSort) {
         EventSort sort;
         if (eventSort == null) {

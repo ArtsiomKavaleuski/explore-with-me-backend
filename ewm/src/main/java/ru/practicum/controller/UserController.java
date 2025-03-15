@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.UserDto;
+import ru.practicum.dto.UserWithFollowersDto;
 import ru.practicum.service.UserService;
 
 import jakarta.validation.Valid;
@@ -38,5 +39,17 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@NotNull @PathVariable Long userId) {
         userService.deleteUser(userId);
+    }
+
+    @PostMapping(value = "/users/{userId}/followers/{followerId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserWithFollowersDto addFollower(@PathVariable Long userId, @PathVariable Long followerId) {
+        return userService.addFollower(userId, followerId);
+    }
+
+    @DeleteMapping(value = "/users/{userId}/followers/{followerId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteFollower(@PathVariable Long userId, @PathVariable Long followerId) {
+        userService.deleteFollower(userId, followerId);
     }
 }
