@@ -58,12 +58,12 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleConstraintViolationException(ConstraintViolationException e) {
         StringWriter out = new StringWriter();
         e.printStackTrace(new PrintWriter(out));
         String stackTrace = out.toString();
-        return new ApiError(HttpStatus.CONFLICT, "Integrity constraint has been violated.", e.getMessage(),
+        return new ApiError(HttpStatus.CONFLICT, "Incorrect request parameter", e.getMessage(),
                 Collections.singletonList(stackTrace), LocalDateTime.now());
     }
 
