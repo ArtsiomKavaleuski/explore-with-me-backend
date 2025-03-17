@@ -317,7 +317,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventFullDto> findEventsByFolloweeOfUser(Long userId, Long followeeId, String sort, String order, Integer from, Integer size) {
         Pageable pageable;
-        OrderSort orderSort = OrderSort.valueOf(sort);
+        OrderSort orderSort = OrderSort.valueOf(order);
         if (orderSort == OrderSort.NEW) {
             pageable = mkPage(from, size, sort, "DESC");
         } else {
@@ -339,8 +339,8 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventShortDto> findEventsByAllSubscriptionsOfUser(Long userId, String sort, String order, Integer from, Integer size) {
         Pageable pageable;
-        OrderSort subSort = OrderSort.valueOf(order);
-        if (subSort == OrderSort.NEW) {
+        OrderSort orderSort = OrderSort.valueOf(order);
+        if (orderSort == OrderSort.NEW) {
             pageable = mkPage(from, size, sort, "DESC");
         } else {
             pageable = mkPage(from, size, sort, "ASC");
