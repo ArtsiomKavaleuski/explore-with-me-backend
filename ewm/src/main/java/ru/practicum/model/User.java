@@ -4,6 +4,8 @@ import lombok.*;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -17,4 +19,10 @@ public class User {
     private Long id;
     private String email;
     private String name;
+    @ToString.Exclude
+    @ManyToMany
+    @JoinTable(name = "user_subscriptions",
+            joinColumns = @JoinColumn(name = "followee_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> followees;
 }

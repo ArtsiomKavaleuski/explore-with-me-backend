@@ -26,7 +26,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -43,12 +42,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventShortDto> findPublishedEvents(EventUserParam eventUserParam, HttpServletRequest request) {
-        Sort sort;
-        List<Event> events;
-        Map<Long, Long> views;
-        sort = getEventSort(eventUserParam.getSort());
-        Pageable pageable = PageRequest.of(eventUserParam.getFrom() / eventUserParam.getSize(),
-                eventUserParam.getSize(), sort);
+        Pageable pageable = mkPage(eventUserParam.getFrom(), eventUserParam.getSize(), eventUserParam.getSort());
         LocalDateTime checkedRangeStart = validateRangeTime(eventUserParam.getRangeStart(), eventUserParam.getRangeEnd());
         Specification<Event> specification = ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -79,8 +73,8 @@ public class EventServiceImpl implements EventService {
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
         }
         );
-        events = eventRepository.findAll(specification, pageable).getContent();
-        views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
+        List<Event> events = eventRepository.findAll(specification, pageable).getContent();
+        Map<Long, Long> views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
         return EventMapper.toShortDtos(events, views);
     }
 
@@ -94,14 +88,11 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventShortDto> findEventsOfUser(Long userId, Integer from, Integer size) {
-        Map<Long, Long> views;
-        List<EventShortDto> userEvents;
         getUserById(userId);
-        Pageable pageable = PageRequest.of(from / size, size);
+        Pageable pageable = mkPage(from, size);
         List<Event> events = eventRepository.findAllByInitiatorId(userId, pageable).getContent();
-        views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
-        userEvents = EventMapper.toShortDtos(events, views);
-        return userEvents;
+        Map<Long, Long> views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
+        return EventMapper.toShortDtos(events, views);
     }
 
     @Override
@@ -135,7 +126,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
 
         if (oldEvent.getState().equals(EventState.PUBLISHED)) {
-            throw new DataConflictException("нельзя изменить опубликованное событие");
+            throw new DataConflictException("Нельзя изменить опубликованное событие");
         }
         if (eventUpdate.getEventDate() != null) {
             LocalDateTime updateEventTime = LocalDateTime.parse(eventUpdate.getEventDate(), FORMATTER);
@@ -237,9 +228,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventFullDto> findEventsByAdmin(EventAdminParam eventAdminParam) {
-        List<Event> events;
-        Map<Long, Long> views;
-        Pageable pageable = PageRequest.of(eventAdminParam.getFrom() / eventAdminParam.getSize(), eventAdminParam.getSize());
+        Pageable pageable = mkPage(eventAdminParam.getFrom(), eventAdminParam.getSize());
         Specification<Event> specification = ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (eventAdminParam.getUsers() != null) {
@@ -273,8 +262,8 @@ public class EventServiceImpl implements EventService {
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
         }
         );
-        events = eventRepository.findAll(specification, pageable).getContent();
-        views = eventStatService.getEventsViews(events.stream().map(Event::getId).collect(Collectors.toList()));
+        List<Event> events = eventRepository.findAll(specification, pageable).getContent();
+        Map<Long, Long> views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
         return EventMapper.toFullDtos(events, views);
     }
 
@@ -323,6 +312,47 @@ public class EventServiceImpl implements EventService {
         updated = eventRepository.save(oldEvent);
         views = eventStatService.getEventsViews(List.of(eventId));
         return EventMapper.toEventFullDtoWithViews(updated, views);
+    }
+
+    @Override
+    public List<EventFullDto> findEventsByFolloweeOfUser(Long userId, Long followeeId, String sort, String order, Integer from, Integer size) {
+        Pageable pageable;
+        OrderSort orderSort = OrderSort.valueOf(order);
+        if (orderSort == OrderSort.NEW) {
+            pageable = mkPage(from, size, sort, "DESC");
+        } else {
+            pageable = mkPage(from, size, sort, "ASC");
+        }
+        if (userId.equals(followeeId)) {
+            throw new DataConflictException("Пользователь не может быть подписан на себя");
+        }
+        User user = getUserById(userId);
+        User followee = getUserById(followeeId);
+        if (!user.getFollowees().contains(followee)) {
+            throw new BadRequestException("Вы не подписаны на пользователя с id " + followeeId);
+        }
+        List<Event> events = eventRepository.findByInitiatorIdAndState(followeeId, EventState.PUBLISHED, pageable);
+        Map<Long, Long> views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
+        return EventMapper.toFullDtos(events, views);
+    }
+
+    @Override
+    public List<EventShortDto> findEventsByAllSubscriptionsOfUser(Long userId, String sort, String order, Integer from, Integer size) {
+        Pageable pageable;
+        OrderSort orderSort = OrderSort.valueOf(order);
+        if (orderSort == OrderSort.NEW) {
+            pageable = mkPage(from, size, sort, "DESC");
+        } else {
+            pageable = mkPage(from, size, sort, "ASC");
+        }
+        User user = getUserById(userId);
+        if (user.getFollowees().isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Long> followees = user.getFollowees().stream().map(User::getId).toList();
+        List<Event> events = eventRepository.findByStateAndInitiatorIdIn(EventState.PUBLISHED, followees, pageable);
+        Map<Long, Long> views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
+        return EventMapper.toShortDtos(events, views);
     }
 
     private Sort getEventSort(String eventSort) {
@@ -440,5 +470,20 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException("Некорректный параметр состояния события");
         }
         return eventStates;
+    }
+
+    private Pageable mkPage(Integer from, Integer size) {
+        return PageRequest.of(from / size, size);
+    }
+
+    private Pageable mkPage(Integer from, Integer size, String sort) {
+        return PageRequest.of(from / size, size, getEventSort(sort));
+    }
+
+    private Pageable mkPage(Integer from, Integer size, String sort, String order) {
+        if (order.equalsIgnoreCase("desc")) {
+            return PageRequest.of(from / size, size, getEventSort(sort).descending());
+        }
+        return PageRequest.of(from / size, size, getEventSort(sort));
     }
 }
