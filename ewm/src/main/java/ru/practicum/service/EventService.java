@@ -28,8 +28,8 @@ public interface EventService {
 
     EventFullDto adminUpdateEvent(Long eventId, UpdateEventAdminRequest eventUpdate);
 
-    List<EventFullDto> findEventsByFolloweeOfUser(Long userId, Long followerId, String sort, Integer from, Integer size);
+    List<EventFullDto> findEventsByFolloweeOfUser(Long userId, Long followerId, String sort, String order, Integer from, Integer size);
 
-    List<EventShortDto> findEventsByAllSubscriptionsOfUser(Long followerId, String sort, Integer from, Integer size);
+    List<EventShortDto> findEventsByAllSubscriptionsOfUser(Long followerId, String sort, String order, Integer from, Integer size);
 
 }

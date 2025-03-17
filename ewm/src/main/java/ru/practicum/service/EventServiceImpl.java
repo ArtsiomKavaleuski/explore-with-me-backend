@@ -42,7 +42,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventShortDto> findPublishedEvents(EventUserParam eventUserParam, HttpServletRequest request) {
-        Pageable pageable = mkPage(eventUserParam.getFrom(), eventUserParam.getSize(), eventUserParam.getSort(), "ASC");
+        Pageable pageable = mkPage(eventUserParam.getFrom(), eventUserParam.getSize(), eventUserParam.getSort());
         LocalDateTime checkedRangeStart = validateRangeTime(eventUserParam.getRangeStart(), eventUserParam.getRangeEnd());
         Specification<Event> specification = ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -315,10 +315,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> findEventsByFolloweeOfUser(Long userId, Long followeeId, String sort, Integer from, Integer size) {
+    public List<EventFullDto> findEventsByFolloweeOfUser(Long userId, Long followeeId, String sort, String order, Integer from, Integer size) {
         Pageable pageable;
-        SubscriptionSort subSort = SubscriptionSort.valueOf(sort);
-        if (subSort == SubscriptionSort.NEW) {
+        OrderSort orderSort = OrderSort.valueOf(sort);
+        if (orderSort == OrderSort.NEW) {
             pageable = mkPage(from, size, sort, "DESC");
         } else {
             pageable = mkPage(from, size, sort, "ASC");
@@ -337,10 +337,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> findEventsByAllSubscriptionsOfUser(Long userId, String sort, Integer from, Integer size) {
+    public List<EventShortDto> findEventsByAllSubscriptionsOfUser(Long userId, String sort, String order, Integer from, Integer size) {
         Pageable pageable;
-        SubscriptionSort subSort = SubscriptionSort.valueOf(sort);
-        if (subSort == SubscriptionSort.NEW) {
+        OrderSort subSort = OrderSort.valueOf(order);
+        if (subSort == OrderSort.NEW) {
             pageable = mkPage(from, size, sort, "DESC");
         } else {
             pageable = mkPage(from, size, sort, "ASC");
@@ -474,6 +474,10 @@ public class EventServiceImpl implements EventService {
 
     private Pageable mkPage(Integer from, Integer size) {
         return PageRequest.of(from / size, size);
+    }
+
+    private Pageable mkPage(Integer from, Integer size, String sort) {
+        return PageRequest.of(from / size, size, getEventSort(sort));
     }
 
     private Pageable mkPage(Integer from, Integer size, String sort, String order) {

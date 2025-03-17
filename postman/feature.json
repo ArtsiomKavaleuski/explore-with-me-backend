@@ -433,7 +433,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/:userId/followees/events?from=0&size=10&sort=NEW",
+					"raw": "http://localhost:8080/users/:userId/followees/events?from=0&size=10&order=NEW",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -455,7 +455,7 @@
 							"value": "10"
 						},
 						{
-							"key": "sort",
+							"key": "order",
 							"value": "NEW"
 						}
 					],
@@ -489,7 +489,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/:userId/followees/events?from=-1&size=10&sort=NEW",
+					"raw": "http://localhost:8080/users/:userId/followees/events?from=-1&size=10&order=NEW",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -511,7 +511,7 @@
 							"value": "10"
 						},
 						{
-							"key": "sort",
+							"key": "order",
 							"value": "NEW"
 						}
 					],
@@ -545,7 +545,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/:userId/followees/events?from=0&size=0&sort=NEW",
+					"raw": "http://localhost:8080/users/:userId/followees/events?from=0&size=0&order=NEW",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -567,7 +567,7 @@
 							"value": "0"
 						},
 						{
-							"key": "sort",
+							"key": "order",
 							"value": "NEW"
 						}
 					],

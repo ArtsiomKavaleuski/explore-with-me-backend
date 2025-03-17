@@ -1,6 +1,6 @@
 package ru.practicum.dto;
 
-public enum SubscriptionSort {
+public enum OrderSort {
     NEW,
     OLD
 }
