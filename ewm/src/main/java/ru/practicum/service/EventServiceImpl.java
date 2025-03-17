@@ -43,12 +43,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventShortDto> findPublishedEvents(EventUserParam eventUserParam, HttpServletRequest request) {
-        Sort sort;
-        List<Event> events;
-        Map<Long, Long> views;
-        sort = getEventSort(eventUserParam.getSort());
-        Pageable pageable = PageRequest.of(eventUserParam.getFrom() / eventUserParam.getSize(),
-                eventUserParam.getSize(), sort);
+        Pageable pageable = mkPage(eventUserParam.getFrom(), eventUserParam.getSize(), eventUserParam.getSort(), "ASC");
         LocalDateTime checkedRangeStart = validateRangeTime(eventUserParam.getRangeStart(), eventUserParam.getRangeEnd());
         Specification<Event> specification = ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -79,8 +74,8 @@ public class EventServiceImpl implements EventService {
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
         }
         );
-        events = eventRepository.findAll(specification, pageable).getContent();
-        views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
+        List<Event> events = eventRepository.findAll(specification, pageable).getContent();
+        Map<Long, Long> views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
         return EventMapper.toShortDtos(events, views);
     }
 
@@ -94,14 +89,11 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventShortDto> findEventsOfUser(Long userId, Integer from, Integer size) {
-        Map<Long, Long> views;
-        List<EventShortDto> userEvents;
         getUserById(userId);
-        Pageable pageable = PageRequest.of(from / size, size);
+        Pageable pageable = mkPage(from, size);
         List<Event> events = eventRepository.findAllByInitiatorId(userId, pageable).getContent();
-        views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
-        userEvents = EventMapper.toShortDtos(events, views);
-        return userEvents;
+        Map<Long, Long> views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
+        return EventMapper.toShortDtos(events, views);
     }
 
     @Override
@@ -135,7 +127,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
 
         if (oldEvent.getState().equals(EventState.PUBLISHED)) {
-            throw new DataConflictException("нельзя изменить опубликованное событие");
+            throw new DataConflictException("Нельзя изменить опубликованное событие");
         }
         if (eventUpdate.getEventDate() != null) {
             LocalDateTime updateEventTime = LocalDateTime.parse(eventUpdate.getEventDate(), FORMATTER);
@@ -237,9 +229,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventFullDto> findEventsByAdmin(EventAdminParam eventAdminParam) {
-        List<Event> events;
-        Map<Long, Long> views;
-        Pageable pageable = PageRequest.of(eventAdminParam.getFrom() / eventAdminParam.getSize(), eventAdminParam.getSize());
+        Pageable pageable = mkPage(eventAdminParam.getFrom(), eventAdminParam.getSize());
         Specification<Event> specification = ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (eventAdminParam.getUsers() != null) {
@@ -273,8 +263,8 @@ public class EventServiceImpl implements EventService {
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
         }
         );
-        events = eventRepository.findAll(specification, pageable).getContent();
-        views = eventStatService.getEventsViews(events.stream().map(Event::getId).collect(Collectors.toList()));
+        List<Event> events = eventRepository.findAll(specification, pageable).getContent();
+        Map<Long, Long> views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
         return EventMapper.toFullDtos(events, views);
     }
 
@@ -330,9 +320,9 @@ public class EventServiceImpl implements EventService {
         Pageable pageable;
         SubscriptionSort subSort = SubscriptionSort.valueOf(sort);
         if (subSort == SubscriptionSort.NEW) {
-            pageable = PageRequest.of(from / size, size, Sort.by("eventDate").descending());
+            pageable = mkPage(from, size, sort, "DESC");
         } else {
-            pageable = PageRequest.of(from / size, size, Sort.by("eventDate"));
+            pageable = mkPage(from, size, sort, "ASC");
         }
         if (userId.equals(followeeId)) {
             throw new DataConflictException("Пользователь не может быть подписан на себя");
@@ -352,9 +342,9 @@ public class EventServiceImpl implements EventService {
         Pageable pageable;
         SubscriptionSort subSort = SubscriptionSort.valueOf(sort);
         if (subSort == SubscriptionSort.NEW) {
-            pageable = PageRequest.of(from / size, size, Sort.by("eventDate").descending());
+            pageable = mkPage(from, size, sort, "DESC");
         } else {
-            pageable = PageRequest.of(from / size, size, Sort.by("eventDate"));
+            pageable = mkPage(from, size, sort, "ASC");
         }
         User user = getUserById(userId);
         if (user.getFollowees().isEmpty()) {
@@ -481,5 +471,16 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException("Некорректный параметр состояния события");
         }
         return eventStates;
+    }
+
+    private Pageable mkPage(Integer from, Integer size) {
+        return PageRequest.of(from / size, size);
+    }
+
+    private Pageable mkPage(Integer from, Integer size, String sort, String order) {
+        if (order.equalsIgnoreCase("desc")) {
+            return PageRequest.of(from / size, size, getEventSort(sort).descending());
+        }
+        return PageRequest.of(from / size, size, getEventSort(sort));
     }
 }
