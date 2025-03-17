@@ -37,12 +37,12 @@ public class UserMapper {
         return new UserShortDto(user.getId(), user.getName());
     }
 
-    public static UserWithFollowersDto toDtoWithFollowers(User user) {
+    public static UserWithFollowersDto toDtoWithFollowees(User user) {
         return UserWithFollowersDto.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
-                .followers(toUserDtos(user.getFollowers()))
+                .followers(toUserDtos(user.getFollowees()))
                 .build();
     }
 }

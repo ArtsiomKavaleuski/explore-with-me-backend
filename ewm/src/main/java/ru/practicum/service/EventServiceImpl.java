@@ -326,7 +326,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> findEventsBySubscriptionOfUser(Long userId, Long followerId, String sort, Integer from, Integer size) {
+    public List<EventFullDto> findEventsByFolloweeOfUser(Long userId, Long followeeId, String sort, Integer from, Integer size) {
         Pageable pageable;
         SubscriptionSort subSort = SubscriptionSort.valueOf(sort);
         if (subSort == SubscriptionSort.NEW) {
@@ -334,22 +334,21 @@ public class EventServiceImpl implements EventService {
         } else {
             pageable = PageRequest.of(from / size, size, Sort.by("eventDate"));
         }
-        if (userId.equals(followerId)) {
+        if (userId.equals(followeeId)) {
             throw new DataConflictException("Пользователь не может быть подписан на себя");
         }
         User user = getUserById(userId);
-        User follower = getUserById(followerId);
-        if (!user.getFollowers().contains(follower)) {
-            throw new BadRequestException("Пользователь с id " + followerId + " не подписан на пользователя с id " +
-                    userId);
+        User followee = getUserById(followeeId);
+        if (!user.getFollowees().contains(followee)) {
+            throw new BadRequestException("Вы не подписаны на пользователя с id " + followeeId);
         }
-        List<Event> events = eventRepository.findByInitiatorIdAndState(userId, EventState.PUBLISHED, pageable);
+        List<Event> events = eventRepository.findByInitiatorIdAndState(followeeId, EventState.PUBLISHED, pageable);
         Map<Long, Long> views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
         return EventMapper.toFullDtos(events, views);
     }
 
     @Override
-    public List<EventShortDto> findEventsByAllSubscriptions(Long followerId, String sort, Integer from, Integer size) {
+    public List<EventShortDto> findEventsByAllSubscriptionsOfUser(Long userId, String sort, Integer from, Integer size) {
         Pageable pageable;
         SubscriptionSort subSort = SubscriptionSort.valueOf(sort);
         if (subSort == SubscriptionSort.NEW) {
@@ -357,12 +356,12 @@ public class EventServiceImpl implements EventService {
         } else {
             pageable = PageRequest.of(from / size, size, Sort.by("eventDate"));
         }
-        User follower = getUserById(followerId);
-        if (follower.getFollowees().isEmpty()) {
+        User user = getUserById(userId);
+        if (user.getFollowees().isEmpty()) {
             return new ArrayList<>();
         }
-        List<Long> folowees = follower.getFollowees().stream().map(User::getId).toList();
-        List<Event> events = eventRepository.findByStateAndInitiatorIdIn(EventState.PUBLISHED, folowees, pageable);
+        List<Long> followees = user.getFollowees().stream().map(User::getId).toList();
+        List<Event> events = eventRepository.findByStateAndInitiatorIdIn(EventState.PUBLISHED, followees, pageable);
         Map<Long, Long> views = eventStatService.getEventsViews(events.stream().map(Event::getId).toList());
         return EventMapper.toShortDtos(events, views);
     }

@@ -41,15 +41,15 @@ public class UserController {
         userService.deleteUser(userId);
     }
 
-    @PostMapping(value = "/users/{userId}/followers/{followerId}")
+    @PostMapping(value = "/users/{userId}/followees/{followeeId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserWithFollowersDto addFollower(@PathVariable Long userId, @PathVariable Long followerId) {
-        return userService.addFollower(userId, followerId);
+    public UserWithFollowersDto addFollower(@PathVariable Long userId, @PathVariable Long followeeId) {
+        return userService.addSubscription(userId, followeeId);
     }
 
-    @DeleteMapping(value = "/users/{userId}/followers/{followerId}")
+    @DeleteMapping(value = "/users/{userId}/followees/{followeeId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteFollower(@PathVariable Long userId, @PathVariable Long followerId) {
-        userService.deleteFollower(userId, followerId);
+    public void deleteFollower(@PathVariable Long userId, @PathVariable Long followeeId) {
+        userService.deleteSubscription(userId, followeeId);
     }
 }

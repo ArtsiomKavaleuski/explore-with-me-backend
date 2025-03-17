@@ -14,9 +14,9 @@ public interface UserService {
 
     void deleteUser(Long userId);
 
-    UserWithFollowersDto addFollower(Long userId, Long followerId);
+    UserWithFollowersDto addSubscription(Long userId, Long followerId);
 
-    void deleteFollower(Long userId, Long followerId);
+    void deleteSubscription(Long userId, Long followerId);
 
     User findById(Long userId);
 

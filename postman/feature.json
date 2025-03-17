@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Add follower successful",
+			"name": "Add followee successful",
 			"event": [
 				{
 					"listen": "test",
@@ -43,7 +43,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/:userId/followers/:followerId",
+					"raw": "http://localhost:8080/users/:userId/followees/:followeeId",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -52,8 +52,8 @@
 					"path": [
 						"users",
 						":userId",
-						"followers",
-						":followerId"
+						"followees",
+						":followeeId"
 					],
 					"variable": [
 						{
@@ -61,8 +61,8 @@
 							"value": "1"
 						},
 						{
-							"key": "followerId",
-							"value": "2"
+							"key": "followeeId",
+							"value": ""
 						}
 					]
 				}
@@ -70,7 +70,7 @@
 			"response": []
 		},
 		{
-			"name": "Add follower fail same person",
+			"name": "Add followee fail same person",
 			"event": [
 				{
 					"listen": "test",
@@ -89,7 +89,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/:userId/followers/:followerId",
+					"raw": "http://localhost:8080/users/:userId/followees/:followeeId",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -98,8 +98,8 @@
 					"path": [
 						"users",
 						":userId",
-						"followers",
-						":followerId"
+						"followees",
+						":followeeId"
 					],
 					"variable": [
 						{
@@ -107,8 +107,8 @@
 							"value": "1"
 						},
 						{
-							"key": "followerId",
-							"value": "1"
+							"key": "followeeId",
+							"value": ""
 						}
 					]
 				}
@@ -116,7 +116,7 @@
 			"response": []
 		},
 		{
-			"name": "Add follower fail already subsribed",
+			"name": "Add followee fail already subsribed",
 			"event": [
 				{
 					"listen": "test",
@@ -135,7 +135,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/:userId/followers/:followerId",
+					"raw": "http://localhost:8080/users/:userId/followees/:followeeId",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -144,8 +144,8 @@
 					"path": [
 						"users",
 						":userId",
-						"followers",
-						":followerId"
+						"followees",
+						":followeeId"
 					],
 					"variable": [
 						{
@@ -153,8 +153,8 @@
 							"value": "1"
 						},
 						{
-							"key": "followerId",
-							"value": "2"
+							"key": "followeeId",
+							"value": ""
 						}
 					]
 				}
@@ -188,7 +188,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/:userId/followers/:followerId/events?from=1&size=10",
+					"raw": "http://localhost:8080/users/:userId/followees/:followeeId/events?from=1&size=10",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -197,8 +197,8 @@
 					"path": [
 						"users",
 						":userId",
-						"followers",
-						":followerId",
+						"followees",
+						":followeeId",
 						"events"
 					],
 					"query": [
@@ -217,8 +217,8 @@
 							"value": "1"
 						},
 						{
-							"key": "followerId",
-							"value": "2"
+							"key": "followeeId",
+							"value": ""
 						}
 					]
 				}
@@ -245,7 +245,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/:userId/followers/:followerId/events?from=-1&size=10",
+					"raw": "http://localhost:8080/users/:userId/followees/:followeeId/events?from=-1&size=10",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -254,8 +254,8 @@
 					"path": [
 						"users",
 						":userId",
-						"followers",
-						":followerId",
+						"followees",
+						":followeeId",
 						"events"
 					],
 					"query": [
@@ -274,8 +274,8 @@
 							"value": "1"
 						},
 						{
-							"key": "followerId",
-							"value": "2"
+							"key": "followeeId",
+							"value": ""
 						}
 					]
 				}
@@ -300,8 +300,11 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"packages": {},
-						"type": "text/javascript"
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -309,7 +312,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/:userId/followers/:followerId/events?from=0&size=0",
+					"raw": "http://localhost:8080/users/:userId/followees/:followeeId/events?from=0&size=0",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -318,8 +321,8 @@
 					"path": [
 						"users",
 						":userId",
-						"followers",
-						":followerId",
+						"followees",
+						":followeeId",
 						"events"
 					],
 					"query": [
@@ -338,8 +341,8 @@
 							"value": "1"
 						},
 						{
-							"key": "followerId",
-							"value": "2"
+							"key": "followeeId",
+							"value": ""
 						}
 					]
 				}
@@ -366,7 +369,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/:userId/followers/:followerId/events?from=0&size=10",
+					"raw": "http://localhost:8080/users/:userId/followees/:followeeId/events?from=0&size=10",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -375,8 +378,8 @@
 					"path": [
 						"users",
 						":userId",
-						"followers",
-						":followerId",
+						"followees",
+						":followeeId",
 						"events"
 					],
 					"query": [
@@ -395,8 +398,8 @@
 							"value": "1"
 						},
 						{
-							"key": "followerId",
-							"value": "3"
+							"key": "followeeId",
+							"value": ""
 						}
 					]
 				}
@@ -421,7 +424,8 @@
 							"    pm.expect(body).is.an('array');\r",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -429,7 +433,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/followers/:followerId/events?from=0&size=10&sort=NEW",
+					"raw": "http://localhost:8080/users/:userId/followees/events?from=0&size=10&sort=NEW",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -437,8 +441,8 @@
 					"port": "8080",
 					"path": [
 						"users",
-						"followers",
-						":followerId",
+						":userId",
+						"followees",
 						"events"
 					],
 					"query": [
@@ -457,8 +461,8 @@
 					],
 					"variable": [
 						{
-							"key": "followerId",
-							"value": "2"
+							"key": "userId",
+							"value": ""
 						}
 					]
 				}
@@ -485,7 +489,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/followers/:followerId/events?from=-1&size=10&sort=NEW",
+					"raw": "http://localhost:8080/users/:userId/followees/events?from=-1&size=10&sort=NEW",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -493,8 +497,8 @@
 					"port": "8080",
 					"path": [
 						"users",
-						"followers",
-						":followerId",
+						":userId",
+						"followees",
 						"events"
 					],
 					"query": [
@@ -513,8 +517,8 @@
 					],
 					"variable": [
 						{
-							"key": "followerId",
-							"value": "2"
+							"key": "userId",
+							"value": ""
 						}
 					]
 				}
@@ -541,7 +545,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/followers/:followerId/events?from=0&size=0&sort=NEW",
+					"raw": "http://localhost:8080/users/:userId/followees/events?from=0&size=0&sort=NEW",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -549,8 +553,8 @@
 					"port": "8080",
 					"path": [
 						"users",
-						"followers",
-						":followerId",
+						":userId",
+						"followees",
 						"events"
 					],
 					"query": [
@@ -569,8 +573,8 @@
 					],
 					"variable": [
 						{
-							"key": "followerId",
-							"value": "2"
+							"key": "userId",
+							"value": ""
 						}
 					]
 				}
@@ -578,7 +582,7 @@
 			"response": []
 		},
 		{
-			"name": "delete follower successful",
+			"name": "delete followee successful",
 			"event": [
 				{
 					"listen": "test",
@@ -597,7 +601,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/:userId/followers/:followerId",
+					"raw": "http://localhost:8080/users/:userId/followees/:followeeId",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -606,8 +610,8 @@
 					"path": [
 						"users",
 						":userId",
-						"followers",
-						":followerId"
+						"followees",
+						":followeeId"
 					],
 					"variable": [
 						{
@@ -615,8 +619,8 @@
 							"value": "1"
 						},
 						{
-							"key": "followerId",
-							"value": "2"
+							"key": "followeeId",
+							"value": ""
 						}
 					]
 				}
@@ -624,7 +628,7 @@
 			"response": []
 		},
 		{
-			"name": "delete follower fail not subscribed",
+			"name": "delete followee fail not subscribed",
 			"event": [
 				{
 					"listen": "test",
@@ -643,7 +647,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/:userId/followers/:followerId",
+					"raw": "http://localhost:8080/users/:userId/followees/:followeeId",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -652,8 +656,8 @@
 					"path": [
 						"users",
 						":userId",
-						"followers",
-						":followerId"
+						"followees",
+						":followeeId"
 					],
 					"variable": [
 						{
@@ -661,8 +665,8 @@
 							"value": "1"
 						},
 						{
-							"key": "followerId",
-							"value": "3"
+							"key": "followeeId",
+							"value": ""
 						}
 					]
 				}

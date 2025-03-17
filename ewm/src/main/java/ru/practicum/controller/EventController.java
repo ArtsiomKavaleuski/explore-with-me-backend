@@ -118,21 +118,21 @@ public class EventController {
         return eventService.adminUpdateEvent(eventId, updateRequest);
     }
 
-    @GetMapping("/users/{userId}/followers/{followerId}/events")
-    public List<EventFullDto> findEventsBySubscriptionOfUser(@PathVariable Long userId,
-                                                             @PathVariable Long followerId,
+    @GetMapping("/users/{userId}/followees/{followeeId}/events")
+    public List<EventFullDto> findEventsByFolloweeOfUser(@PathVariable Long userId,
+                                                             @PathVariable Long followeeId,
                                                              @RequestParam(required = false, defaultValue = "NEW") String sort,
                                                              @PositiveOrZero @RequestParam(required = false, defaultValue = "0") Integer from,
                                                              @Positive @RequestParam(required = false, defaultValue = "10") Integer size) {
-        return eventService.findEventsBySubscriptionOfUser(userId, followerId, sort, from, size);
+        return eventService.findEventsByFolloweeOfUser(userId, followeeId, sort, from, size);
     }
 
-    @GetMapping("/users/followers/{followerId}/events")
-    public List<EventShortDto> findEventsByAllSubscriptions(@PathVariable Long followerId,
+    @GetMapping("/users/{userId}/followees/events")
+    public List<EventShortDto> findEventsByAllSubscriptionsOfUser(@PathVariable Long userId,
                                                             @RequestParam(required = false, defaultValue = "NEW") String sort,
                                                             @PositiveOrZero @RequestParam(required = false, defaultValue = "0") Integer from,
                                                             @Positive @RequestParam(required = false, defaultValue = "10") Integer size) {
-        return eventService.findEventsByAllSubscriptions(followerId, sort, from, size);
+        return eventService.findEventsByAllSubscriptionsOfUser(userId, sort, from, size);
     }
 
 

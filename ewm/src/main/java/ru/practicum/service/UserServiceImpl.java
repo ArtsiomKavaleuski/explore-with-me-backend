@@ -54,34 +54,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserWithFollowersDto addFollower(Long userId, Long followerId) {
-        if (userId.equals(followerId)) {
+    public UserWithFollowersDto addSubscription(Long userId, Long followeeId) {
+        if (userId.equals(followeeId)) {
             throw new DataConflictException("Пользователь не может подписаться на самого себя");
         }
         User user = findById(userId);
-        User follower = findById(followerId);
+        User followee = findById(followeeId);
 
-        if (user.getFollowers().contains(follower)) {
+        if (user.getFollowees().contains(followee)) {
             throw new DataConflictException("Подписка уже существует");
         }
-        user.getFollowers().add(follower);
+        user.getFollowees().add(followee);
         user = userRepository.save(user);
-        return UserMapper.toDtoWithFollowers(user);
+        return UserMapper.toDtoWithFollowees(user);
     }
 
     @Transactional
     @Override
-    public void deleteFollower(Long userId, Long followerId) {
-        if (userId.equals(followerId)) {
+    public void deleteSubscription(Long userId, Long followeeId) {
+        if (userId.equals(followeeId)) {
             throw new DataConflictException("Попытка удалить подписку на самого себя");
         }
         User user = findById(userId);
-        User follower = findById(followerId);
+        User followee = findById(followeeId);
 
-        if (!user.getFollowers().contains(follower)) {
+        if (!user.getFollowees().contains(followee)) {
             throw new DataConflictException("Подписки не существует");
         }
-        user.getFollowers().remove(follower);
+        user.getFollowees().remove(followee);
         userRepository.save(user);
     }
 }

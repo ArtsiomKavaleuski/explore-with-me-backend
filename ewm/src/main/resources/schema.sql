@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS requests;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS user_subscriptions;
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -57,9 +58,9 @@ CREATE TABLE IF NOT EXISTS compilation_events (
     CONSTRAINT fk_comp_events_to_comps FOREIGN KEY(compilation_id) REFERENCES compilations(id),
     CONSTRAINT fk_comp_events_to_events FOREIGN KEY(event_id) REFERENCES events(id));
 
-CREATE TABLE IF NOT EXISTS user_followers (
+CREATE TABLE IF NOT EXISTS user_subscriptions (
     user_id BIGINT                            NOT NULL,
-    follower_id BIGINT                        NOT NULL,
-    CONSTRAINT user_followers_pk PRIMARY KEY (user_id, follower_id),
-    CONSTRAINT fk_user_followers_to_users FOREIGN KEY(user_id) REFERENCES users(id),
-    CONSTRAINT fk_followers_to_users FOREIGN KEY(follower_id) REFERENCES users(id));
+    followee_id BIGINT                        NOT NULL,
+    CONSTRAINT user_followees_pk PRIMARY KEY (user_id, followee_id),
+    CONSTRAINT fk_user_followees_to_users FOREIGN KEY(user_id) REFERENCES users(id),
+    CONSTRAINT fk_followees_to_users FOREIGN KEY(followee_id) REFERENCES users(id));
