@@ -38,5 +38,5 @@ API основного сервиса разделен на три части. �
 - **Административный** (доступен только для администратора проекта)
   - API для работы со статистикой посещений
 ## Спецификация REST API swagger
-- [Основной сервис](https://github.com/ArtsiomKavaleuski/explore-with-me-backend/blob/main/ewm-main-service-spec.json)
-- [Сервис статистики](https://github.com/ArtsiomKavaleuski/explore-with-me-backend/blob/main/ewm-stats-service-spec.json)
+- [Основной сервис](https://github.com/ArtsiomKavaleuski/explore-with-me-backend/main/ewm-main-service-spec.json)
+- [Сервис статистики](https://github.com/ArtsiomKavaleuski/explore-with-me-backend/main/ewm-stats-service-spec.json)
